@@ -42,8 +42,9 @@ def remove_duplicates(directory):
             print(f"Renamed {latest} to {name}{ext})
             
     
-
+    
 def prompt_user():
+
     subfolders = [ f.name for f in os.scandir(folder) if f.is_dir() ]
     
     print("WARNING: This script deletes duplicate files. Files may be deleted.")
