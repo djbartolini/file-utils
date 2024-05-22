@@ -1,0 +1,35 @@
+import os
+import subprocess
+import time
+
+# Define the number of days of inactivity before asking to remove an app
+inactivity_period = 360 # 360 days
+
+apps_dir = "/Applications"
+app_names = os.listdir(apps_dir)
+
+# Check the last access time for each app binary and ask to remove if inactive for over 90 days
+for app_name in app_names:
+    
+    app_path = os.path.join(apps_dir, app_name)
+    
+    if os.path.isdir(app_path):
+        
+        app_binary = os.path.join(app_path, "Contents/MacOS", app_name[:-4])
+        
+        if os.path.exists(app_binary):
+            last_access_time = os.stat(app_binary).st_atime
+            days_since_access = (time.time() - last_access_time) // (24 * 60 * 60)
+            
+            if int(days_since_access) > inactivity_period:
+                alert_message = f"Are you still using {app_name}? Do you want to remove it?"
+                button_pressed = subprocess.run(['osascript', '-e', f'tell app "System Events" to display alert "{alert_message}" buttons {{"Keep", "Remove"}} default button "Remove"', '-e', 'button returned of result'], stdout=subprocess.PIPE, encoding='utf-8').stdout.strip()
+                
+                if button_pressed == "Remove":
+                    print(f"Removed {app_name}")
+                    subprocess.run(['sudo', 'rm', '-rf', app_path])
+                
+                else:
+                    print(f"Kept {app_name}")
+                    with open('app_decisions.txt', 'a') as file:
+                        file.write(f"{app_name},Keep,{time.time()}\n")
