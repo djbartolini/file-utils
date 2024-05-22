@@ -1,0 +1,4 @@
+0 0 * * * /path/to/remove_dupes.py
+0 0 * * * /path/to/remove_temps.py
+0 5,17 * * * /path/to/download_cleanup.py
+0 0 1 * * /path/to/remove_apps.py
